@@ -1,0 +1,12 @@
+02:37:31 load
+02:37:52 split {'train': {'flows': 1659350, 'attack': 90720, 'blocks': 209}, 'val': {'flows': 340152, 'attack': 18359, 'blocks': 44}, 'test': {'flows': 351107, 'attack': 18600, 'blocks': 44}}
+02:38:22 flow bin rf no_ttl {'precision': 0.9989, 'recall': 0.9993, 'f1': 0.9991, 'fpr': 0.0001, 'roc_auc': 1.0, 'pr_auc': 1.0, 'threshold': 0.8775, 'fit_s': 26.6, 'infer_flows_per_s': 457161}
+02:38:33 flow bin xgb no_ttl {'precision': 0.999, 'recall': 0.9997, 'f1': 0.9994, 'fpr': 0.0001, 'roc_auc': 1.0, 'pr_auc': 1.0, 'threshold': 0.9374, 'fit_s': 9.2, 'infer_flows_per_s': 643663}
+02:38:51 flow bin rf all {'precision': 0.9999, 'recall': 0.9999, 'f1': 0.9999, 'fpr': 0.0, 'roc_auc': 1.0, 'pr_auc': 0.9999, 'threshold': 0.8626, 'fit_s': 16.2, 'infer_flows_per_s': 493280}
+02:38:59 flow bin xgb all {'precision': 0.9999, 'recall': 0.9999, 'f1': 0.9999, 'fpr': 0.0, 'roc_auc': 1.0, 'pr_auc': 1.0, 'threshold': 0.9564, 'fit_s': 7.2, 'infer_flows_per_s': 1138056}
+02:39:34 flow mc rf 0.6196
+02:41:31 flow mc xgb 0.6178
+02:42:03 window 10 {'rules': {'precision': 0.8235, 'recall': 0.0053, 'f1': 0.0105, 'fpr': 0.0002}, 'iforest': {'precision': 0.8439, 'recall': 0.9625, 'f1': 0.8993, 'fpr': 0.0348, 'roc_auc': 0.9896, 'pr_auc': 0.9186}, 'xgb': {'precision': 0.9865, 'recall': 0.9962, 'f1': 0.9913, 'fpr': 0.0027, 'roc_auc': 0.9997, 'pr_auc': 0.9981}, 'rf': {'precision': 0.954, 'recall': 0.9981, 'f1': 0.9756, 'fpr': 0.0094, 'roc_auc': 0.9996, 'pr_auc': 0.9962}}
+02:42:16 window 30 {'rules': {'precision': 0.2647, 'recall': 0.0097, 'f1': 0.0187, 'fpr': 0.005}, 'iforest': {'precision': 0.8865, 'recall': 0.9505, 'f1': 0.9174, 'fpr': 0.0226, 'roc_auc': 0.9924, 'pr_auc': 0.9334}, 'xgb': {'precision': 0.9914, 'recall': 0.9871, 'f1': 0.9892, 'fpr': 0.0016, 'roc_auc': 0.9999, 'pr_auc': 0.9994}, 'rf': {'precision': 0.9477, 'recall': 0.9946, 'f1': 0.9706, 'fpr': 0.0102, 'roc_auc': 0.9997, 'pr_auc': 0.9987}}
+02:42:24 window 60 {'rules': {'precision': 0.102, 'recall': 0.0104, 'f1': 0.0189, 'fpr': 0.0159}, 'iforest': {'precision': 0.8992, 'recall': 0.9104, 'f1': 0.9048, 'fpr': 0.0177, 'roc_auc': 0.9901, 'pr_auc': 0.9168}, 'xgb': {'precision': 0.9957, 'recall': 0.9729, 'f1': 0.9842, 'fpr': 0.0007, 'roc_auc': 0.9999, 'pr_auc': 0.9995}, 'rf': {'precision': 0.9833, 'recall': 0.9792, 'f1': 0.9812, 'fpr': 0.0029, 'roc_auc': 0.9997, 'pr_auc': 0.9983}}
+02:42:24 done

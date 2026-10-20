@@ -1,0 +1,670 @@
+{
+  "eda": {
+    "rows": 2365424,
+    "columns": 55,
+    "duplicates": 14815,
+    "missing": {
+      "SRC_TO_DST_SECOND_BYTES": 63425
+    },
+    "class_counts": {
+      "Benign": 2237731,
+      "Exploits": 42748,
+      "Fuzzers": 33816,
+      "Generic": 19651,
+      "Reconnaissance": 17074,
+      "DoS": 5980,
+      "Backdoor": 4659,
+      "Shellcode": 2381,
+      "Analysis": 1226,
+      "Worms": 158
+    },
+    "infinite": {
+      "SRC_TO_DST_SECOND_BYTES": 59024,
+      "DST_TO_SRC_SECOND_BYTES": 109125
+    },
+    "rows_after_dedup": 2350609,
+    "attack_share": 0.0543,
+    "ttl_share": {
+      "31": {
+        "benign": 0.991,
+        "attack": 0.0
+      },
+      "254": {
+        "benign": 0.0,
+        "attack": 0.75
+      },
+      "62": {
+        "benign": 0.0,
+        "attack": 0.248
+      },
+      "0": {
+        "benign": 0.006,
+        "attack": 0.001
+      },
+      "29": {
+        "benign": 0.002,
+        "attack": 0.0
+      },
+      "1": {
+        "benign": 0.001,
+        "attack": 0.0
+      }
+    },
+    "attack_src_subnets": {
+      "175.45.176": 127679
+    }
+  },
+  "split": {
+    "train": {
+      "flows": 1659350,
+      "attack": 90720,
+      "blocks": 209
+    },
+    "val": {
+      "flows": 340152,
+      "attack": 18359,
+      "blocks": 44
+    },
+    "test": {
+      "flows": 351107,
+      "attack": 18600,
+      "blocks": 44
+    }
+  },
+  "flow_features": {
+    "all": [
+      "L4_DST_PORT",
+      "PROTOCOL",
+      "L7_PROTO",
+      "IN_BYTES",
+      "IN_PKTS",
+      "OUT_BYTES",
+      "OUT_PKTS",
+      "TCP_FLAGS",
+      "CLIENT_TCP_FLAGS",
+      "SERVER_TCP_FLAGS",
+      "FLOW_DURATION_MILLISECONDS",
+      "DURATION_IN",
+      "DURATION_OUT",
+      "MIN_TTL",
+      "MAX_TTL",
+      "LONGEST_FLOW_PKT",
+      "SHORTEST_FLOW_PKT",
+      "MIN_IP_PKT_LEN",
+      "MAX_IP_PKT_LEN",
+      "SRC_TO_DST_SECOND_BYTES",
+      "DST_TO_SRC_SECOND_BYTES",
+      "RETRANSMITTED_IN_BYTES",
+      "RETRANSMITTED_IN_PKTS",
+      "RETRANSMITTED_OUT_BYTES",
+      "RETRANSMITTED_OUT_PKTS",
+      "SRC_TO_DST_AVG_THROUGHPUT",
+      "DST_TO_SRC_AVG_THROUGHPUT",
+      "NUM_PKTS_UP_TO_128_BYTES",
+      "NUM_PKTS_128_TO_256_BYTES",
+      "NUM_PKTS_256_TO_512_BYTES",
+      "NUM_PKTS_512_TO_1024_BYTES",
+      "NUM_PKTS_1024_TO_1514_BYTES",
+      "TCP_WIN_MAX_IN",
+      "TCP_WIN_MAX_OUT",
+      "ICMP_TYPE",
+      "ICMP_IPV4_TYPE",
+      "DNS_QUERY_TYPE",
+      "DNS_TTL_ANSWER",
+      "FTP_COMMAND_RET_CODE",
+      "SRC_TO_DST_IAT_MIN",
+      "SRC_TO_DST_IAT_MAX",
+      "SRC_TO_DST_IAT_AVG",
+      "SRC_TO_DST_IAT_STDDEV",
+      "DST_TO_SRC_IAT_MIN",
+      "DST_TO_SRC_IAT_MAX",
+      "DST_TO_SRC_IAT_AVG",
+      "DST_TO_SRC_IAT_STDDEV"
+    ],
+    "no_ttl": [
+      "L4_DST_PORT",
+      "PROTOCOL",
+      "L7_PROTO",
+      "IN_BYTES",
+      "IN_PKTS",
+      "OUT_BYTES",
+      "OUT_PKTS",
+      "TCP_FLAGS",
+      "CLIENT_TCP_FLAGS",
+      "SERVER_TCP_FLAGS",
+      "FLOW_DURATION_MILLISECONDS",
+      "DURATION_IN",
+      "DURATION_OUT",
+      "LONGEST_FLOW_PKT",
+      "SHORTEST_FLOW_PKT",
+      "MIN_IP_PKT_LEN",
+      "MAX_IP_PKT_LEN",
+      "SRC_TO_DST_SECOND_BYTES",
+      "DST_TO_SRC_SECOND_BYTES",
+      "RETRANSMITTED_IN_BYTES",
+      "RETRANSMITTED_IN_PKTS",
+      "RETRANSMITTED_OUT_BYTES",
+      "RETRANSMITTED_OUT_PKTS",
+      "SRC_TO_DST_AVG_THROUGHPUT",
+      "DST_TO_SRC_AVG_THROUGHPUT",
+      "NUM_PKTS_UP_TO_128_BYTES",
+      "NUM_PKTS_128_TO_256_BYTES",
+      "NUM_PKTS_256_TO_512_BYTES",
+      "NUM_PKTS_512_TO_1024_BYTES",
+      "NUM_PKTS_1024_TO_1514_BYTES",
+      "TCP_WIN_MAX_IN",
+      "TCP_WIN_MAX_OUT",
+      "ICMP_TYPE",
+      "ICMP_IPV4_TYPE",
+      "DNS_QUERY_TYPE",
+      "DNS_TTL_ANSWER",
+      "FTP_COMMAND_RET_CODE",
+      "SRC_TO_DST_IAT_MIN",
+      "SRC_TO_DST_IAT_MAX",
+      "SRC_TO_DST_IAT_AVG",
+      "SRC_TO_DST_IAT_STDDEV",
+      "DST_TO_SRC_IAT_MIN",
+      "DST_TO_SRC_IAT_MAX",
+      "DST_TO_SRC_IAT_AVG",
+      "DST_TO_SRC_IAT_STDDEV"
+    ]
+  },
+  "flow_train_balanced": {
+    "rows": 404446,
+    "attack": 90720
+  },
+  "flow_importance_top": {
+    "MIN_IP_PKT_LEN": 0.843,
+    "DST_TO_SRC_AVG_THROUGHPUT": 0.0572,
+    "NUM_PKTS_UP_TO_128_BYTES": 0.0295,
+    "SHORTEST_FLOW_PKT": 0.0183,
+    "DNS_TTL_ANSWER": 0.0167,
+    "SERVER_TCP_FLAGS": 0.0083,
+    "SRC_TO_DST_SECOND_BYTES": 0.0074,
+    "SRC_TO_DST_IAT_MIN": 0.0043,
+    "DST_TO_SRC_IAT_MAX": 0.0023,
+    "TCP_WIN_MAX_OUT": 0.002,
+    "TCP_FLAGS": 0.0017,
+    "SRC_TO_DST_IAT_STDDEV": 0.0016,
+    "SRC_TO_DST_IAT_AVG": 0.0011,
+    "OUT_BYTES": 0.0009,
+    "TCP_WIN_MAX_IN": 0.0006
+  },
+  "flow_binary": {
+    "rf_no_ttl": {
+      "precision": 0.9989,
+      "recall": 0.9993,
+      "f1": 0.9991,
+      "fpr": 0.0001,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "threshold": 0.8775,
+      "fit_s": 26.6,
+      "infer_flows_per_s": 457161
+    },
+    "xgb_no_ttl": {
+      "precision": 0.999,
+      "recall": 0.9997,
+      "f1": 0.9994,
+      "fpr": 0.0001,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "threshold": 0.9374,
+      "fit_s": 9.2,
+      "infer_flows_per_s": 643663
+    },
+    "rf_all": {
+      "precision": 0.9999,
+      "recall": 0.9999,
+      "f1": 0.9999,
+      "fpr": 0.0,
+      "roc_auc": 1.0,
+      "pr_auc": 0.9999,
+      "threshold": 0.8626,
+      "fit_s": 16.2,
+      "infer_flows_per_s": 493280
+    },
+    "xgb_all": {
+      "precision": 0.9999,
+      "recall": 0.9999,
+      "f1": 0.9999,
+      "fpr": 0.0,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "threshold": 0.9564,
+      "fit_s": 7.2,
+      "infer_flows_per_s": 1138056
+    }
+  },
+  "flow_multiclass": {
+    "rf": {
+      "macro_f1": 0.6196,
+      "weighted_f1": 0.984,
+      "accuracy": 0.9848,
+      "per_class": {
+        "Benign": {
+          "precision": 1.0,
+          "recall": 0.9998,
+          "f1-score": 0.9999,
+          "support": 332507.0
+        },
+        "Analysis": {
+          "precision": 0.4228,
+          "recall": 0.2766,
+          "f1-score": 0.3344,
+          "support": 188.0
+        },
+        "Backdoor": {
+          "precision": 0.3009,
+          "recall": 0.0468,
+          "f1-score": 0.081,
+          "support": 727.0
+        },
+        "DoS": {
+          "precision": 0.6021,
+          "recall": 0.3358,
+          "f1-score": 0.4311,
+          "support": 676.0
+        },
+        "Exploits": {
+          "precision": 0.789,
+          "recall": 0.677,
+          "f1-score": 0.7287,
+          "support": 6845.0
+        },
+        "Fuzzers": {
+          "precision": 0.6245,
+          "recall": 0.9273,
+          "f1-score": 0.7464,
+          "support": 4444.0
+        },
+        "Generic": {
+          "precision": 0.7816,
+          "recall": 0.911,
+          "f1-score": 0.8413,
+          "support": 2730.0
+        },
+        "Reconnaissance": {
+          "precision": 0.7542,
+          "recall": 0.5978,
+          "f1-score": 0.6669,
+          "support": 2628.0
+        },
+        "Shellcode": {
+          "precision": 0.6855,
+          "recall": 0.5879,
+          "f1-score": 0.633,
+          "support": 330.0
+        },
+        "Worms": {
+          "precision": 0.7857,
+          "recall": 0.6875,
+          "f1-score": 0.7333,
+          "support": 32.0
+        }
+      }
+    },
+    "xgb": {
+      "macro_f1": 0.6178,
+      "weighted_f1": 0.9841,
+      "accuracy": 0.9851,
+      "per_class": {
+        "Benign": {
+          "precision": 1.0,
+          "recall": 0.9999,
+          "f1-score": 0.9999,
+          "support": 332507.0
+        },
+        "Analysis": {
+          "precision": 0.4196,
+          "recall": 0.25,
+          "f1-score": 0.3133,
+          "support": 188.0
+        },
+        "Backdoor": {
+          "precision": 0.3939,
+          "recall": 0.0536,
+          "f1-score": 0.0944,
+          "support": 727.0
+        },
+        "DoS": {
+          "precision": 0.6645,
+          "recall": 0.3077,
+          "f1-score": 0.4206,
+          "support": 676.0
+        },
+        "Exploits": {
+          "precision": 0.8035,
+          "recall": 0.6627,
+          "f1-score": 0.7263,
+          "support": 6845.0
+        },
+        "Fuzzers": {
+          "precision": 0.617,
+          "recall": 0.9595,
+          "f1-score": 0.751,
+          "support": 4444.0
+        },
+        "Generic": {
+          "precision": 0.7797,
+          "recall": 0.9103,
+          "f1-score": 0.84,
+          "support": 2730.0
+        },
+        "Reconnaissance": {
+          "precision": 0.7737,
+          "recall": 0.605,
+          "f1-score": 0.6791,
+          "support": 2628.0
+        },
+        "Shellcode": {
+          "precision": 0.6937,
+          "recall": 0.597,
+          "f1-score": 0.6417,
+          "support": 330.0
+        },
+        "Worms": {
+          "precision": 0.7778,
+          "recall": 0.6562,
+          "f1-score": 0.7119,
+          "support": 32.0
+        }
+      }
+    }
+  },
+  "rules_thresholds_10s": {
+    "pkts_s": 2075.96,
+    "flows": 124.5,
+    "uniq_dst_ip": 15.0
+  },
+  "window": {
+    "10s": {
+      "windows": {
+        "train": 75931,
+        "val": 15691,
+        "test": 16134
+      },
+      "attack_windows": {
+        "train": 12684,
+        "val": 2649,
+        "test": 2639
+      },
+      "agg_flows_per_s": 324171,
+      "rules": {
+        "precision": 0.8235,
+        "recall": 0.0053,
+        "f1": 0.0105,
+        "fpr": 0.0002
+      },
+      "iforest": {
+        "precision": 0.8439,
+        "recall": 0.9625,
+        "f1": 0.8993,
+        "fpr": 0.0348,
+        "roc_auc": 0.9896,
+        "pr_auc": 0.9186
+      },
+      "xgb": {
+        "precision": 0.9865,
+        "recall": 0.9962,
+        "f1": 0.9913,
+        "fpr": 0.0027,
+        "roc_auc": 0.9997,
+        "pr_auc": 0.9981
+      },
+      "rf": {
+        "precision": 0.954,
+        "recall": 0.9981,
+        "f1": 0.9756,
+        "fpr": 0.0094,
+        "roc_auc": 0.9996,
+        "pr_auc": 0.9962
+      },
+      "xgb_multiclass_macro_f1": 0.4209,
+      "detection_by_type": {
+        "Analysis": {
+          "n": 32,
+          "rules": 0.0,
+          "iforest": 0.969,
+          "xgb": 1.0
+        },
+        "Backdoor": {
+          "n": 119,
+          "rules": 0.0,
+          "iforest": 0.975,
+          "xgb": 0.992
+        },
+        "DoS": {
+          "n": 123,
+          "rules": 0.0,
+          "iforest": 0.894,
+          "xgb": 0.992
+        },
+        "Exploits": {
+          "n": 1097,
+          "rules": 0.013,
+          "iforest": 0.942,
+          "xgb": 0.996
+        },
+        "Fuzzers": {
+          "n": 448,
+          "rules": 0.0,
+          "iforest": 0.987,
+          "xgb": 1.0
+        },
+        "Generic": {
+          "n": 348,
+          "rules": 0.0,
+          "iforest": 0.989,
+          "xgb": 0.997
+        },
+        "Reconnaissance": {
+          "n": 426,
+          "rules": 0.0,
+          "iforest": 0.981,
+          "xgb": 0.995
+        },
+        "Shellcode": {
+          "n": 43,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 0.977
+        },
+        "Worms": {
+          "n": 3,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 1.0
+        }
+      }
+    },
+    "30s": {
+      "windows": {
+        "train": 27791,
+        "val": 5757,
+        "test": 5928
+      },
+      "attack_windows": {
+        "train": 4475,
+        "val": 936,
+        "test": 929
+      },
+      "agg_flows_per_s": 591750,
+      "rules": {
+        "precision": 0.2647,
+        "recall": 0.0097,
+        "f1": 0.0187,
+        "fpr": 0.005
+      },
+      "iforest": {
+        "precision": 0.8865,
+        "recall": 0.9505,
+        "f1": 0.9174,
+        "fpr": 0.0226,
+        "roc_auc": 0.9924,
+        "pr_auc": 0.9334
+      },
+      "xgb": {
+        "precision": 0.9914,
+        "recall": 0.9871,
+        "f1": 0.9892,
+        "fpr": 0.0016,
+        "roc_auc": 0.9999,
+        "pr_auc": 0.9994
+      },
+      "rf": {
+        "precision": 0.9477,
+        "recall": 0.9946,
+        "f1": 0.9706,
+        "fpr": 0.0102,
+        "roc_auc": 0.9997,
+        "pr_auc": 0.9987
+      },
+      "xgb_multiclass_macro_f1": 0.3713,
+      "detection_by_type": {
+        "Analysis": {
+          "n": 9,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 1.0
+        },
+        "Backdoor": {
+          "n": 42,
+          "rules": 0.0,
+          "iforest": 0.952,
+          "xgb": 0.976
+        },
+        "DoS": {
+          "n": 18,
+          "rules": 0.0,
+          "iforest": 0.889,
+          "xgb": 0.944
+        },
+        "Exploits": {
+          "n": 461,
+          "rules": 0.013,
+          "iforest": 0.933,
+          "xgb": 0.991
+        },
+        "Fuzzers": {
+          "n": 179,
+          "rules": 0.0,
+          "iforest": 0.989,
+          "xgb": 1.0
+        },
+        "Generic": {
+          "n": 98,
+          "rules": 0.01,
+          "iforest": 0.98,
+          "xgb": 0.98
+        },
+        "Reconnaissance": {
+          "n": 119,
+          "rules": 0.017,
+          "iforest": 0.941,
+          "xgb": 0.975
+        },
+        "Shellcode": {
+          "n": 3,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 0.667
+        }
+      }
+    },
+    "60s": {
+      "windows": {
+        "train": 15242,
+        "val": 3173,
+        "test": 3253
+      },
+      "attack_windows": {
+        "train": 2287,
+        "val": 479,
+        "test": 480
+      },
+      "agg_flows_per_s": 737073,
+      "rules": {
+        "precision": 0.102,
+        "recall": 0.0104,
+        "f1": 0.0189,
+        "fpr": 0.0159
+      },
+      "iforest": {
+        "precision": 0.8992,
+        "recall": 0.9104,
+        "f1": 0.9048,
+        "fpr": 0.0177,
+        "roc_auc": 0.9901,
+        "pr_auc": 0.9168
+      },
+      "xgb": {
+        "precision": 0.9957,
+        "recall": 0.9729,
+        "f1": 0.9842,
+        "fpr": 0.0007,
+        "roc_auc": 0.9999,
+        "pr_auc": 0.9995
+      },
+      "rf": {
+        "precision": 0.9833,
+        "recall": 0.9792,
+        "f1": 0.9812,
+        "fpr": 0.0029,
+        "roc_auc": 0.9997,
+        "pr_auc": 0.9983
+      },
+      "xgb_multiclass_macro_f1": 0.3773,
+      "detection_by_type": {
+        "Analysis": {
+          "n": 5,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 1.0
+        },
+        "Backdoor": {
+          "n": 24,
+          "rules": 0.0,
+          "iforest": 0.875,
+          "xgb": 0.917
+        },
+        "DoS": {
+          "n": 2,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 1.0
+        },
+        "Exploits": {
+          "n": 263,
+          "rules": 0.011,
+          "iforest": 0.867,
+          "xgb": 0.977
+        },
+        "Fuzzers": {
+          "n": 94,
+          "rules": 0.0,
+          "iforest": 0.979,
+          "xgb": 0.989
+        },
+        "Generic": {
+          "n": 47,
+          "rules": 0.021,
+          "iforest": 1.0,
+          "xgb": 0.979
+        },
+        "Reconnaissance": {
+          "n": 44,
+          "rules": 0.023,
+          "iforest": 0.932,
+          "xgb": 0.932
+        },
+        "Shellcode": {
+          "n": 1,
+          "rules": 0.0,
+          "iforest": 1.0,
+          "xgb": 1.0
+        }
+      }
+    }
+  }
+}

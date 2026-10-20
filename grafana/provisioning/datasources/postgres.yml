@@ -1,0 +1,10 @@
+apiVersion: 1
+datasources:
+  - name: NIDS
+    type: grafana-postgresql-datasource
+    uid: nids-pg
+    url: db:5432
+    user: nids
+    secureJsonData: {password: nids}
+    jsonData: {database: nids, sslmode: disable, postgresVersion: 1600}
+    isDefault: true

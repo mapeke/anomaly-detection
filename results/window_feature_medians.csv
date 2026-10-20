@@ -1,0 +1,14 @@
+,Норма (медиана),Атака (медиана)
+flows,23.0,4.0
+pkts_s,164.8,10.85
+bytes_s,44012.45,1923.9
+uniq_dst_ip,8.0,3.0
+uniq_dst_port,13.0,2.0
+syn_only_ratio,0.0,0.0
+ent_dst_ip,2.584,1.0
+ent_dst_port,3.236,1.0
+mean_dur,0.264,0.684
+bytes_per_pkt,306.519,196.103
+pkts_per_flow,64.833,19.0
+udp_ratio,0.231,0.0
+small_flow_ratio,0.0,0.077

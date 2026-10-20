@@ -1,0 +1,362 @@
+{
+  "train": {
+    "normal_windows": 35512,
+    "labelled_windows": 34387,
+    "attack_windows": 96,
+    "iforest_threshold": 0.7574,
+    "rules_thresholds": {
+      "pkts_s": 204.89,
+      "flows": 61.5,
+      "uniq_dst_ip": 42.0
+    }
+  },
+  "test": {
+    "rules": {
+      "scenarios": [
+        {
+          "scenario": "SYN-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "SYN-flood",
+          "detectors": "rules",
+          "confidence": 0.9
+        },
+        {
+          "scenario": "UDP-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "UDP-flood",
+          "detectors": "rules",
+          "confidence": 0.9
+        },
+        {
+          "scenario": "Scan",
+          "rate": 250.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "SYN-flood",
+          "detectors": "rules",
+          "confidence": 0.9
+        },
+        {
+          "scenario": "Bruteforce",
+          "rate": 6.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Bruteforce",
+          "detectors": "rules",
+          "confidence": 0.9
+        }
+      ],
+      "false_incidents": 0,
+      "fp_per_hour": 0.0,
+      "detected": 4,
+      "throughput_flows_s": 36670,
+      "flows": 933089,
+      "fp_examples": []
+    },
+    "iforest": {
+      "scenarios": [
+        {
+          "scenario": "SYN-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Anomaly",
+          "detectors": "iforest",
+          "confidence": 0.585
+        },
+        {
+          "scenario": "UDP-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Anomaly",
+          "detectors": "iforest",
+          "confidence": 0.543
+        },
+        {
+          "scenario": "Scan",
+          "rate": 250.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Anomaly",
+          "detectors": "iforest",
+          "confidence": 0.534131614450168
+        },
+        {
+          "scenario": "Bruteforce",
+          "rate": 6.0,
+          "detected": false
+        }
+      ],
+      "false_incidents": 0,
+      "fp_per_hour": 0.0,
+      "detected": 3,
+      "throughput_flows_s": 29590,
+      "flows": 933089,
+      "fp_examples": []
+    },
+    "xgb": {
+      "scenarios": [
+        {
+          "scenario": "SYN-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "SYN-flood",
+          "detectors": "xgb",
+          "confidence": 0.9873843193054199
+        },
+        {
+          "scenario": "UDP-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "UDP-flood",
+          "detectors": "xgb",
+          "confidence": 0.987
+        },
+        {
+          "scenario": "Scan",
+          "rate": 250.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Scan",
+          "detectors": "xgb",
+          "confidence": 0.989
+        },
+        {
+          "scenario": "Bruteforce",
+          "rate": 6.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Bruteforce",
+          "detectors": "xgb",
+          "confidence": 0.9924220442771912
+        }
+      ],
+      "false_incidents": 0,
+      "fp_per_hour": 0.0,
+      "detected": 4,
+      "throughput_flows_s": 28780,
+      "flows": 933089,
+      "fp_examples": []
+    },
+    "rules+iforest+xgb": {
+      "scenarios": [
+        {
+          "scenario": "SYN-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "SYN-flood",
+          "detectors": "iforest,rules,xgb",
+          "confidence": 0.9873843193054199
+        },
+        {
+          "scenario": "UDP-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "UDP-flood",
+          "detectors": "iforest,rules,xgb",
+          "confidence": 0.987
+        },
+        {
+          "scenario": "Scan",
+          "rate": 250.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Scan",
+          "detectors": "iforest,rules,xgb",
+          "confidence": 0.989
+        },
+        {
+          "scenario": "Bruteforce",
+          "rate": 6.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Bruteforce",
+          "detectors": "rules,xgb",
+          "confidence": 0.9924220442771912
+        }
+      ],
+      "false_incidents": 0,
+      "fp_per_hour": 0.0,
+      "detected": 4,
+      "throughput_flows_s": 22774,
+      "flows": 933089,
+      "fp_examples": []
+    },
+    "rules_v1": {
+      "scenarios": [
+        {
+          "scenario": "SYN-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "SYN-flood",
+          "detectors": "rules",
+          "confidence": 0.9
+        },
+        {
+          "scenario": "UDP-flood",
+          "rate": 1500.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "UDP-flood",
+          "detectors": "rules",
+          "confidence": 0.9
+        },
+        {
+          "scenario": "Scan",
+          "rate": 250.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "SYN-flood",
+          "detectors": "rules",
+          "confidence": 0.9
+        },
+        {
+          "scenario": "Bruteforce",
+          "rate": 6.0,
+          "detected": true,
+          "latency_s": 30.1,
+          "type": "Bruteforce",
+          "detectors": "rules",
+          "confidence": 0.9
+        }
+      ],
+      "false_incidents": 8,
+      "fp_per_hour": 8.0,
+      "detected": 4,
+      "fp_examples": [
+        {
+          "start_ms": 1760000100000,
+          "end_ms": 1760000110000,
+          "src": "100.64.0.50",
+          "dst": "10.0.0.53",
+          "kind": "Volumetric",
+          "confidence": 0.9,
+          "detectors": [
+            "rules"
+          ],
+          "windows": 1
+        },
+        {
+          "start_ms": 1760001320000,
+          "end_ms": 1760001330000,
+          "src": "100.64.0.42",
+          "dst": "203.0.113.1",
+          "kind": "Volumetric",
+          "confidence": 0.9,
+          "detectors": [
+            "rules"
+          ],
+          "windows": 1
+        },
+        {
+          "start_ms": 1760001330000,
+          "end_ms": 1760001340000,
+          "src": "100.64.0.17",
+          "dst": "10.0.0.53",
+          "kind": "Volumetric",
+          "confidence": 0.9,
+          "detectors": [
+            "rules"
+          ],
+          "windows": 1
+        },
+        {
+          "start_ms": 1760001970000,
+          "end_ms": 1760001980000,
+          "src": "100.64.0.59",
+          "dst": "10.0.0.53",
+          "kind": "Volumetric",
+          "confidence": 0.9,
+          "detectors": [
+            "rules"
+          ],
+          "windows": 1
+        },
+        {
+          "start_ms": 1760002500000,
+          "end_ms": 1760002510000,
+          "src": "100.64.0.17",
+          "dst": "10.0.0.53",
+          "kind": "Volumetric",
+          "confidence": 0.9,
+          "detectors": [
+            "rules"
+          ],
+          "windows": 1
+        }
+      ]
+    }
+  },
+  "test_flows_per_s_offered": 259.2,
+  "background_1h": {
+    "flows": 292209,
+    "false_incidents": 0,
+    "examples": [],
+    "throughput_flows_s": 6760
+  },
+  "low_intensity": {
+    "scenarios": [
+      {
+        "scenario": "SYN-flood",
+        "rate": 300.0,
+        "detected": true,
+        "latency_s": 30.0,
+        "type": "SYN-flood",
+        "detectors": "iforest,rules,xgb",
+        "confidence": 0.9394710063934326
+      },
+      {
+        "scenario": "UDP-flood",
+        "rate": 300.0,
+        "detected": true,
+        "latency_s": 30.0,
+        "type": "UDP-flood",
+        "detectors": "iforest,rules,xgb",
+        "confidence": 0.948
+      },
+      {
+        "scenario": "Scan",
+        "rate": 50.0,
+        "detected": true,
+        "latency_s": 30.0,
+        "type": "Scan",
+        "detectors": "iforest,rules,xgb",
+        "confidence": 0.604
+      },
+      {
+        "scenario": "Bruteforce",
+        "rate": 1.2000000000000002,
+        "detected": true,
+        "latency_s": 30.0,
+        "type": "Bruteforce",
+        "detectors": "xgb",
+        "confidence": 0.9929384589195251
+      },
+      {
+        "scenario": "Scan",
+        "rate": 3.0,
+        "detected": true,
+        "latency_s": 30.0,
+        "type": "Scan",
+        "detectors": "iforest,rules",
+        "confidence": 0.9
+      }
+    ],
+    "false_incidents": 0
+  },
+  "batch_throughput": {
+    "flows": 449658,
+    "seconds": 9.27,
+    "flows_per_s": 48498
+  }
+}

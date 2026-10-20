@@ -1,0 +1,12 @@
+02:42:28 train
+02:42:36 {'normal_windows': 35512, 'labelled_windows': 34387, 'attack_windows': 96, 'iforest_threshold': 0.7574, 'rules_thresholds': {'pkts_s': 204.89, 'flows': 61.5, 'uniq_dst_ip': 42.0}}
+02:42:36 test
+02:43:02 rules 4 fp 0 thr 36670
+02:43:34 iforest 3 fp 0 thr 29590
+02:44:06 xgb 4 fp 0 thr 28780
+02:44:47 rules+iforest+xgb 4 fp 0 thr 22774
+02:45:19 rules_v1 4 fp 8
+02:45:19 clean background
+02:46:02 low intensity
+02:46:46 throughput
+02:46:56 done

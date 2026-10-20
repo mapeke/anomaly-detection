@@ -1,0 +1,153 @@
+{
+ "uid": "nids-main",
+ "title": "NetFlow IDS — трафик и инциденты",
+ "refresh": "10s",
+ "time": {
+  "from": "now-30m",
+  "to": "now"
+ },
+ "schemaVersion": 39,
+ "panels": [
+  {
+   "id": 1,
+   "type": "timeseries",
+   "title": "Пакетов в секунду",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "nids-pg"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "pps"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT time_bucket AS time, pps AS \"pps\" FROM traffic_per_10s WHERE $__timeFilter(time_bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "type": "timeseries",
+   "title": "Битрейт",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "nids-pg"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bps"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT time_bucket AS time, bps AS \"bps\" FROM traffic_per_10s WHERE $__timeFilter(time_bucket) ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "type": "timeseries",
+   "title": "Оценка аномальности (макс. по окну)",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "nids-pg"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 8,
+    "w": 12,
+    "h": 7
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none"
+    },
+    "overrides": []
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "format": "time_series",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT win_start AS time, max(if_score) AS \"IF score\" FROM windows WHERE $__timeFilter(win_start) GROUP BY 1 ORDER BY 1"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "type": "stat",
+   "title": "Инцидентов за период",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "nids-pg"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 8,
+    "w": 12,
+    "h": 7
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT kind, count(*) FROM incidents WHERE $__timeFilter(started_at) GROUP BY kind"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "type": "table",
+   "title": "Журнал инцидентов",
+   "datasource": {
+    "type": "grafana-postgresql-datasource",
+    "uid": "nids-pg"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 15,
+    "w": 24,
+    "h": 10
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "format": "table",
+     "rawQuery": true,
+     "editorMode": "code",
+     "rawSql": "SELECT started_at AS \"Начало\", updated_at AS \"Обновлён\", kind AS \"Тип\", host(src) AS \"Источник\", host(dst) AS \"Цель\", round(confidence::numeric,2) AS \"Уверенность\", array_to_string(detectors, ', ') AS \"Детекторы\", notified AS \"Telegram\" FROM incidents WHERE $__timeFilter(started_at) ORDER BY started_at DESC LIMIT 200"
+    }
+   ]
+  }
+ ],
+ "tags": [
+  "nids"
+ ]
+}

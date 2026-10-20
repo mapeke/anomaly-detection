@@ -1,0 +1,46 @@
+# Прототип: коллектор NetFlow -> PostgreSQL -> детекторы -> Telegram и Grafana.
+# Запуск:  docker compose up --build        (стенд шлёт NetFlow v9/IPFIX на UDP 2055 хоста)
+# Без стенда: REPLAY=1 docker compose up    (воспроизведение имитационной модели)
+services:
+  db:
+    image: postgres:16-alpine
+    environment: {POSTGRES_USER: nids, POSTGRES_PASSWORD: nids, POSTGRES_DB: nids}
+    volumes: [./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro, pgdata:/var/lib/postgresql/data]
+    healthcheck: {test: ["CMD-SHELL", "pg_isready -U nids"], interval: 5s, retries: 20}
+    ports: ["5432:5432"]
+
+  collector:            # nfcapd принимает NetFlow v9 / IPFIX и ротирует файлы каждые 10 с
+    build: .
+    command: ["nfcapd", "-w", "/data/nfcapd", "-p", "2055", "-t", "10", "-S", "1"]
+    ports: ["2055:2055/udp"]
+    volumes: [flows:/data/nfcapd]
+
+  loader:
+    build: .
+    command: ["python", "-m", "nids.loader", "--dir", "/data/nfcapd"]
+    environment:
+      DATABASE_URL: postgresql://nids:nids@db:5432/nids
+      REPLAY: ${REPLAY:-0}
+    volumes: [flows:/data/nfcapd]
+    depends_on: {db: {condition: service_healthy}}
+
+  detector:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://nids:nids@db:5432/nids
+      MODELS_PATH: models/window_models_stand.joblib
+      WINDOW_S: "10"
+      POLL_S: "5"
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    depends_on: {db: {condition: service_healthy}}
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    environment: {GF_AUTH_ANONYMOUS_ENABLED: "true", GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer}
+    volumes: [./grafana/provisioning:/etc/grafana/provisioning:ro]
+    ports: ["3000:3000"]
+    depends_on: [db]
+
+volumes: {pgdata: {}, flows: {}}
