@@ -31,8 +31,10 @@ services:
       MODELS_PATH: models/window_models_stand.joblib
       WINDOW_S: "10"
       POLL_S: "5"
+      CLOCK: ${CLOCK:-wall}           # flows — если часы маршрутизаторов не совпадают с хостом
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    volumes: [./models:/app/models:ro]     # переобученные модели подхватываются без пересборки
     depends_on: {db: {condition: service_healthy}}
     restart: unless-stopped
 

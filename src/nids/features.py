@@ -56,13 +56,13 @@ def from_nf_v3(df: pd.DataFrame) -> pd.DataFrame:
 def from_nfdump_csv(df: pd.DataFrame) -> pd.DataFrame:
     """Вывод `nfdump -o csv` (поля ts,te,sa,da,sp,dp,pr,flg,ipkt,ibyt,...) -> единая схема."""
     proto_map = {"TCP": 6, "UDP": 17, "ICMP": 1}
-    ts = pd.to_datetime(df["ts"]).astype("int64") // 10**6
-    te = pd.to_datetime(df["te"]).astype("int64") // 10**6
+    ts = pd.to_datetime(df["ts"], format="mixed").astype("datetime64[ms]").astype("int64")   # мс (pandas 3 не всегда хранит нс)
+    te = pd.to_datetime(df["te"], format="mixed").astype("datetime64[ms]").astype("int64")
     flags = df["flg"].astype(str).map(_nfdump_flags)
     return pd.DataFrame({
         "ts": ts, "te": te, "src": df["sa"], "dst": df["da"],
         "sport": df["sp"].astype(int), "dport": df["dp"].astype(int),
-        "proto": df["pr"].map(lambda p: proto_map.get(str(p).upper(), 0)),
+        "proto": df["pr"].map(lambda p: int(p) if str(p).strip().isdigit() else proto_map.get(str(p).strip().upper(), 0)),
         "bytes": df["ibyt"].astype(int) + df.get("obyt", 0),
         "pkts": df["ipkt"].astype(int) + df.get("opkt", 0),
         "flags": flags, "dur": (te - ts) / 1000.0,
@@ -70,7 +70,12 @@ def from_nfdump_csv(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _nfdump_flags(s: str) -> int:
-    # nfdump печатает флаги как строку вида "...AP.SF" (позиции C E U A P R S F)
+    # nfdump печатает флаги как строку вида "...AP.SF" (позиции C E U A P R S F) или числом
+    s = str(s).strip()
+    if s.isdigit():
+        return int(s)
+    if s.lower().startswith("0x"):
+        return int(s, 16)
     bits = {"F": 0x01, "S": 0x02, "R": 0x04, "P": 0x08, "A": 0x10, "U": 0x20}
     return sum(v for k, v in bits.items() if k in s)
 

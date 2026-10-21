@@ -25,8 +25,9 @@
                         ether2 |             | ether3
                [SUB-1 100.64.10.20]     [SUB-2 100.64.10.21]   абоненты (CGNAT 100.64.0.0/10)
 
-  Коллектор: хост с docker compose, 10.0.0.100, UDP/2055 — получает NetFlow v9 / IPFIX
-  от R-BORDER и R-BNG (экспорт с интерфейсов, обращённых к абонентам и к Интернету).
+  Коллектор: Windows-хост с docker compose, 10.0.0.100 (host-only адаптер VirtualBox,
+  облако GNS3 на коммутаторе ЦОД), UDP/2055 — NetFlow v9 / IPFIX от R-BORDER и R-BNG.
+  Межсетевой экран R-CORE пропускает к хосту только NetFlow.
 ```
 
 ## План IP-адресации
@@ -47,11 +48,10 @@
 
 ## Порядок развёртывания
 
-1. GNS3 2.2+, образ MikroTik CHR 7.x (`chr-7.x.img`), образы Ubuntu 22.04 для хостов
-   (на хостах: iperf3, curl, dnsutils; на ATTACKER — hping3, nmap, hydra).
-2. Собрать топологию по схеме, коллектор подключить к R-CORE ether3 через облако/NAT-адаптер GNS3.
-3. Применить конфигурации `mikrotik/*.rsc` (`/import file-name=r-border.rsc`).
-4. На хосте коллектора: `docker compose up --build`, проверить приём: `docker compose logs loader`.
-5. Фон: `scenarios/background.sh` на SUB-1/SUB-2 и EXT-SRV (не менее 1 ч записи нормы).
-6. Атаки: `scenarios/run_attacks.sh` на ATTACKER — пишет журнал `attacks_journal.csv`
-   (время начала и конца каждого сценария), который служит разметкой.
+Подробная пошаговая инструкция (GNS3, образ хостов, host-only адаптер для коллектора 10.0.0.100,
+запись трафика, переобучение и оценка НФТ-2): [`docs/GUIDE_STAND.md`](../docs/GUIDE_STAND.md).
+
+Кратко: образ хостов `docker build -t nids-host -f stand/docker/Dockerfile stand` в GNS3 VM;
+конфигурации `mikrotik/*.rsc`; службы `scenarios/start_services.sh`; фон `scenarios/background.sh`;
+атаки `scenarios/run_attacks.sh` (журнал — разметка); обучение `scripts/train_stand.py`;
+оценка `scripts/eval_stand.py`.

@@ -1,5 +1,6 @@
 # R-BNG — доступ/агрегация абонентов, CGNAT (RouterOS 7)
 /system identity set name=R-BNG
+/system clock set time-zone-name=UTC
 /interface bridge add name=lo
 /interface bridge add name=br-subs
 /interface bridge port add bridge=br-subs interface=ether2
@@ -8,9 +9,6 @@
 add address=10.255.0.3/32 interface=lo
 add address=10.0.23.2/30 interface=ether1
 add address=100.64.10.1/24 interface=br-subs
-/ip pool add name=subs ranges=100.64.10.20-100.64.10.250
-/ip dhcp-server network add address=100.64.10.0/24 gateway=100.64.10.1 dns-server=10.0.0.53
-/ip dhcp-server add name=dhcp-subs interface=br-subs address-pool=subs
 /routing ospf instance add name=ospf1 router-id=10.255.0.3
 /routing ospf area add name=backbone instance=ospf1 area-id=0.0.0.0
 /routing ospf interface-template add area=backbone networks=10.0.23.0/30,100.64.10.0/24,10.255.0.3/32

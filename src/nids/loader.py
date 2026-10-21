@@ -42,21 +42,35 @@ def watch(conn, flow_dir: Path, poll: float):
         for f in sorted(flow_dir.rglob("nfcapd.2*")):     # nfcapd.current.* ещё пишется
             if f.name in seen:
                 continue
-            res = subprocess.run(["nfdump", "-r", str(f), "-o", "csv", "-q"], capture_output=True, text=True)
+            res = subprocess.run(["nfdump", "-r", str(f), "-o", "csv"], capture_output=True, text=True)
             if res.returncode != 0 or not res.stdout.strip():
                 seen.add(f.name)
                 continue
-            raw = pd.read_csv(io.StringIO(res.stdout), header=None, names=_NFDUMP_FIELDS, usecols=range(15))
-            df = from_nfdump_csv(raw)
+            df = parse_nfdump_csv(res.stdout)
+            if df.empty:
+                seen.add(f.name)
+                continue
             insert(conn, df)
             seen.add(f.name)
             log.info("%s: %d flows", f.name, len(df))
         time.sleep(poll)
 
 
-# порядок первых полей `nfdump -o csv` (nfdump 1.7)
-_NFDUMP_FIELDS = ["ts", "te", "td", "sa", "da", "sp", "dp", "pr", "flg", "fwd", "stos",
-                  "ipkt", "ibyt", "opkt", "obyt"]
+def parse_nfdump_csv(text: str) -> pd.DataFrame:
+    """Вывод `nfdump -o csv` -> единая схема. Столбцы ищутся по заголовку (ts, te, sa, da, sp, dp,
+    pr, flg, ipkt, ibyt, opkt, obyt); строки сводки в конце вывода отбрасываются."""
+    raw = pd.read_csv(io.StringIO(text), dtype=str, on_bad_lines="skip")
+    raw.columns = [c.strip() for c in raw.columns]
+    raw = raw[raw["ts"].str.match(r"^\d{4}-\d{2}-\d{2}", na=False)]
+    if raw.empty:
+        return pd.DataFrame()
+    for col in ("ipkt", "ibyt", "opkt", "obyt", "sp", "dp"):
+        if col in raw:
+            raw[col] = pd.to_numeric(raw[col], errors="coerce").fillna(0).astype(int)
+    for col in ("opkt", "obyt"):
+        if col not in raw:
+            raw[col] = 0
+    return from_nfdump_csv(raw)
 
 
 def replay(conn, speed: float, seed: int):
