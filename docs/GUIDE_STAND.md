@@ -1,5 +1,7 @@
 # Пошаговая инструкция: стенд, запуск прототипа, оценка НФТ-2
 
+Два варианта стенда: **Б — в Docker** (одна команда, ниже) и **А — GNS3 + MikroTik CHR** (этапы 0–5).
+
 Документ закрывает невыполненные пункты ТЗ: стенд GNS3 (ФТ-1), запись нормального трафика и
 сценариев атак, проверку Telegram и Grafana (ФТ-4, ФТ-5), оценку на стенде (НФТ-2) и запуск
 на чистой машине (НФТ-4).
@@ -14,6 +16,38 @@
 | 5. Обновление диплома | — | — | прислать файлы из этапа 4 |
 
 Все времена в журналах и командах — **UTC**. Казахстан (Алматы) — UTC+5: 15:00 по Алматы = 10:00 UTC.
+
+---
+
+## Вариант Б: стенд целиком в Docker (без GNS3) — рекомендуется для ноутбука
+
+Та же топология и адресация, маршрутизаторы — контейнеры FRR (OSPF) + softflowd (NetFlow v9),
+хосты — образ `nids-host`. Нужен только Docker Desktop (WSL 2).
+
+```powershell
+docker compose -p nidslab -f docker-compose.yml -f stand/lab/docker-compose.lab.yml up -d --build
+docker exec nidslab-r-core-1 vtysh -c "show ip ospf neighbor"      # 2 соседа Full
+docker exec nidslab-sub-1-1 curl -s -o NUL -w "%{http_code}" http://203.0.113.10/   # 200
+```
+
+Полный эксперимент (≈ 3 ч 45 мин: норма 1 ч, обучающие атаки, переобучение, тестовый час,
+час фона, оценка) запускается одним скриптом:
+
+```powershell
+python scripts/run_stand_experiment.py
+```
+
+Результаты: `results/stand_train.json`, `results/stand_eval_test.json`,
+`results/stand_eval_background.json`, журналы `stand/journals/*.csv`, ход эксперимента —
+`results/stand_session.log`. Демонстрация атаки вручную:
+
+```powershell
+docker exec nidslab-attacker-1 timeout 60 hping3 -S -p 80 -i u500 100.64.10.20
+```
+
+Особенности (подробно — раздел 2.2 записки): OSPF в режиме NBMA (Docker не пересылает multicast),
+сети без NAT вместо internal, softflowd собран с тайм-аутом захвата 100 мс, задержка записи 22–26 с
+(допуск детектора `GRACE_S=30`), интенсивность атак ограничена 2000 пакетов/с.
 
 ---
 

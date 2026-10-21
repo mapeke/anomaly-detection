@@ -38,11 +38,17 @@ def insert(conn, df: pd.DataFrame, exporter: str | None = None):
 
 def watch(conn, flow_dir: Path, poll: float):
     seen: set[str] = set()
+    # после перезапуска не загружать повторно уже обработанные файлы (иначе дубликаты в БД);
+    # LOAD_EXISTING=1 — загрузить и файлы, накопленные до старта
+    if os.getenv("LOAD_EXISTING") != "1":
+        started = time.time() - 15
+        seen = {f.name for f in flow_dir.rglob("nfcapd.2*") if f.stat().st_mtime < started}
+        log.info("пропущено ранее записанных файлов: %d", len(seen))
     while True:
         for f in sorted(flow_dir.rglob("nfcapd.2*")):     # nfcapd.current.* ещё пишется
             if f.name in seen:
                 continue
-            res = subprocess.run(["nfdump", "-r", str(f), "-o", "csv"], capture_output=True, text=True)
+            res = subprocess.run(["nfdump", "-r", str(f), "-o", NFDUMP_FMT], capture_output=True, text=True)
             if res.returncode != 0 or not res.stdout.strip():
                 seen.add(f.name)
                 continue
@@ -56,17 +62,29 @@ def watch(conn, flow_dir: Path, poll: float):
         time.sleep(poll)
 
 
+# Явный формат вывода: стандартный `-o csv` в nfdump 1.7.4+ не содержит флагов TCP
+NFDUMP_FMT = "csv:%ts,%te,%sa,%da,%sp,%dp,%pr,%flg,%ipkt,%ibyt,%opkt,%obyt"
+# имена столбцов nfdump 1.7.4+ -> имена nfdump 1.6–1.7.3
+_RENAME = {"firstSeen": "ts", "lastSeen": "te", "srcAddr": "sa", "dstAddr": "da", "srcPort": "sp",
+           "dstPort": "dp", "proto": "pr", "flags": "flg", "inPackets": "ipkt", "inBytes": "ibyt",
+           "outPackets": "opkt", "outBytes": "obyt"}
+
+
 def parse_nfdump_csv(text: str) -> pd.DataFrame:
     """Вывод `nfdump -o csv` -> единая схема. Столбцы ищутся по заголовку (ts, te, sa, da, sp, dp,
     pr, flg, ipkt, ibyt, opkt, obyt); строки сводки в конце вывода отбрасываются."""
     raw = pd.read_csv(io.StringIO(text), dtype=str, on_bad_lines="skip")
-    raw.columns = [c.strip() for c in raw.columns]
+    raw.columns = [_RENAME.get(c.strip(), c.strip()) for c in raw.columns]
+    if "ts" not in raw:
+        log.error("неизвестный формат вывода nfdump: %s", list(raw.columns))
+        return pd.DataFrame()
+    raw = raw.apply(lambda col: col.str.strip() if col.dtype == object else col)
     raw = raw[raw["ts"].str.match(r"^\d{4}-\d{2}-\d{2}", na=False)]
     if raw.empty:
         return pd.DataFrame()
     for col in ("ipkt", "ibyt", "opkt", "obyt", "sp", "dp"):
         if col in raw:
-            raw[col] = pd.to_numeric(raw[col], errors="coerce").fillna(0).astype(int)
+            raw[col] = pd.to_numeric(raw[col], errors="coerce").fillna(0).astype(float).astype(int)
     for col in ("opkt", "obyt"):
         if col not in raw:
             raw[col] = 0
@@ -108,7 +126,7 @@ def main():
     if a.replay or os.getenv("REPLAY") == "1":
         replay(conn, a.speed, a.seed)
     else:
-        watch(conn, Path(a.dir), 2.0)
+        watch(conn, Path(a.dir), 1.0)
 
 
 if __name__ == "__main__":

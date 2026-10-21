@@ -1,0 +1,92 @@
+# Стенд упрощённой сети провайдера в Docker (вариант containerlab-подобного стенда из ТЗ).
+# Топология и адресация совпадают с stand/README.md: R-BORDER, R-CORE, R-BNG (FRR + softflowd),
+# SUB-1, SUB-2, EXT-SRV, ISP-SRV, ATTACKER. Сети стенда изолированы: без NAT и без маршрута в Интернет.
+#
+# Запуск вместе с прототипом (из корня репозитория):
+#   docker compose -f docker-compose.yml -f stand/lab/docker-compose.lab.yml up -d --build
+x-router: &router
+  build: stand/lab/router
+  cap_add: [NET_ADMIN, NET_RAW, SYS_ADMIN]
+  sysctls: {net.ipv4.ip_forward: "1", net.ipv4.conf.all.rp_filter: "0"}
+  environment: &renv {COLLECTOR: "10.0.0.100:2055"}
+
+x-host: &host
+  build: {context: stand, dockerfile: docker/Dockerfile}
+  image: nids-host
+  cap_add: [NET_ADMIN, NET_RAW]
+  init: true
+
+services:
+  # ------------------------------------------------------------------ маршрутизаторы
+  r-border:
+    <<: *router
+    hostname: R-BORDER
+    environment: {<<: *renv, ROUTER_ID: 10.255.0.1, OSPF_NETS: "10.0.12.0/29", OSPF_NEIGHBORS: "10.0.12.2", EXPORT_IPS: "203.0.113.1 198.51.100.1"}
+    networks:
+      lab_ext: {ipv4_address: 203.0.113.1}
+      lab_att: {ipv4_address: 198.51.100.1}
+      lab_bc: {ipv4_address: 10.0.12.1}
+  r-core:
+    <<: *router
+    hostname: R-CORE
+    environment: {<<: *renv, ROUTER_ID: 10.255.0.2, OSPF_NETS: "10.0.12.0/29 10.0.23.0/29 10.0.0.0/24", OSPF_NEIGHBORS: "10.0.12.1 10.0.23.2", EXPORT_IPS: ""}
+    networks:
+      lab_bc: {ipv4_address: 10.0.12.2}
+      lab_cb: {ipv4_address: 10.0.23.1}
+      lab_dc: {ipv4_address: 10.0.0.1}
+  r-bng:
+    <<: *router
+    hostname: R-BNG
+    environment: {<<: *renv, ROUTER_ID: 10.255.0.3, OSPF_NETS: "10.0.23.0/29", OSPF_NEIGHBORS: "10.0.23.1", EXPORT_IPS: "100.64.10.1"}
+    networks:
+      lab_cb: {ipv4_address: 10.0.23.2}
+      lab_sub: {ipv4_address: 100.64.10.1}
+
+  # ------------------------------------------------------------------ хосты
+  sub-1:
+    <<: *host
+    hostname: SUB-1
+    command: ["bash", "-c", "ip route replace default via 100.64.10.1 && /opt/stand/start_services.sh sub && sleep infinity"]
+    networks: {lab_sub: {ipv4_address: 100.64.10.20}}
+  sub-2:
+    <<: *host
+    hostname: SUB-2
+    command: ["bash", "-c", "ip route replace default via 100.64.10.1 && /opt/stand/start_services.sh sub && sleep infinity"]
+    networks: {lab_sub: {ipv4_address: 100.64.10.21}}
+  ext-srv:
+    <<: *host
+    hostname: EXT-SRV
+    command: ["bash", "-c", "ip route replace default via 203.0.113.1 && /opt/stand/start_services.sh ext && sleep infinity"]
+    networks: {lab_ext: {ipv4_address: 203.0.113.10}}
+  isp-srv:
+    <<: *host
+    hostname: ISP-SRV
+    command: ["bash", "-c", "ip route replace default via 10.0.0.1 && /opt/stand/start_services.sh isp && sleep infinity"]
+    networks: {lab_dc: {ipv4_address: 10.0.0.53}}
+  attacker:
+    <<: *host
+    hostname: ATTACKER
+    command: ["bash", "-c", "ip route replace default via 198.51.100.1 && sleep infinity"]
+    networks: {lab_att: {ipv4_address: 198.51.100.66}}
+
+  # ------------------------------------------------------------------ коллектор прототипа в сегменте ЦОД
+  collector:
+    networks:
+      default: {}
+      lab_dc: {ipv4_address: 10.0.0.100}
+
+# Изоляция: мосты без NAT (enable_ip_masquerade=false), у маршрутизаторов удалён маршрут по умолчанию,
+# у хостов шлюз — маршрутизатор стенда; пакеты стенда не транслируются наружу и не имеют пути в Интернет.
+# (Режим internal не подходит: Docker отбрасывает в нём кадры с адресами чужих подсетей, т.е. весь
+# маршрутизируемый трафик между сегментами.)
+x-isolated: &isolated
+  driver: bridge
+  driver_opts: {com.docker.network.bridge.enable_ip_masquerade: "false"}
+
+networks:
+  lab_ext: {<<: *isolated, ipam: {config: [{subnet: 203.0.113.0/24, gateway: 203.0.113.254}]}}
+  lab_att: {<<: *isolated, ipam: {config: [{subnet: 198.51.100.0/24, gateway: 198.51.100.254}]}}
+  lab_bc:  {<<: *isolated, ipam: {config: [{subnet: 10.0.12.0/29, gateway: 10.0.12.6}]}}
+  lab_cb:  {<<: *isolated, ipam: {config: [{subnet: 10.0.23.0/29, gateway: 10.0.23.6}]}}
+  lab_dc:  {<<: *isolated, ipam: {config: [{subnet: 10.0.0.0/24, gateway: 10.0.0.254}]}}
+  lab_sub: {<<: *isolated, ipam: {config: [{subnet: 100.64.10.0/24, gateway: 100.64.10.254}]}}

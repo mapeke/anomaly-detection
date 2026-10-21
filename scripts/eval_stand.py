@@ -32,6 +32,7 @@ ap.add_argument("--period", nargs=2, required=True, metavar=("START", "END"))
 ap.add_argument("--journal", nargs="+", required=True)
 ap.add_argument("--offline", action="store_true")
 ap.add_argument("--models", default=str(ROOT / "models" / "window_models_stand.joblib"))
+ap.add_argument("--out", default=str(ROOT / "results" / "stand_eval.json"))
 a = ap.parse_args()
 t0, t1 = to_ms(a.period[0]), to_ms(a.period[1])
 hours = (t1 - t0) / 3_600_000
@@ -74,14 +75,23 @@ for _, j in journal.iterrows():
                     "detectors": ",".join(sorted(set(",".join(m.detectors).split(","))))})
     else:
         res.append({"scenario": j.kind, "detected": False})
-fp = inc.drop(index=list(matched)) if len(inc) else inc
+# инциденты, где источником указана сама цель во время атаки (+60 с), — ответный трафик жертвы
+# (SYN-ACK/RST на тысячи портов при флуде); учитываются отдельно, а не как обнаружение
+related = set()
+for _, j in journal.iterrows():
+    if len(inc):
+        m = inc[(inc.src == j.target) & (inc.started < j.end + 60_000) & (inc.updated > j.start)]
+        related |= set(m.index) - matched
+fp = inc.drop(index=list(matched | related)) if len(inc) else inc
 out = {"period": a.period, "mode": "offline" if a.offline else "online", "hours": round(hours, 2),
        "scenarios": res, "detected": sum(r["detected"] for r in res), "total": len(res),
+       "victim_backscatter_incidents": len(related),
        "false_incidents": len(fp), "fp_per_hour": round(len(fp) / hours, 2),
        "false_examples": fp.head(10).to_dict("records")}
-(ROOT / "results" / "stand_eval.json").write_text(json.dumps(out, ensure_ascii=False, indent=2, default=str),
+Path(a.out).write_text(json.dumps(out, ensure_ascii=False, indent=2, default=str),
                                                   encoding="utf-8")
 print(pd.DataFrame(res).to_string(index=False))
 lat = [r["latency_s"] for r in res if r["detected"]]
 print(f"\nобнаружено {out['detected']} из {out['total']} (НФТ-2: ≥ 3); макс. задержка "
-      f"{max(lat) if lat else '—'} с (≤ 60); ложных инцидентов {len(fp)} за {hours:.2f} ч = {out['fp_per_hour']}/ч (≤ 2)")
+      f"{max(lat) if lat else '—'} с (≤ 60); ложных инцидентов {len(fp)} за {hours:.2f} ч = {out['fp_per_hour']}/ч (≤ 2); "
+      f"ответный трафик жертвы: {len(related)}")

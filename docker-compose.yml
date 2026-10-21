@@ -9,9 +9,9 @@ services:
     healthcheck: {test: ["CMD-SHELL", "pg_isready -U nids"], interval: 5s, retries: 20}
     ports: ["5432:5432"]
 
-  collector:            # nfcapd принимает NetFlow v9 / IPFIX и ротирует файлы каждые 10 с
+  collector:            # nfcapd принимает NetFlow v9 / IPFIX и ротирует файлы каждые 5 с
     build: .
-    command: ["nfcapd", "-w", "/data/nfcapd", "-p", "2055", "-t", "10", "-S", "1"]
+    command: ["nfcapd", "-w", "/data/nfcapd", "-p", "2055", "-t", "5", "-S", "1"]
     ports: ["2055:2055/udp"]
     volumes: [flows:/data/nfcapd]
 
@@ -31,6 +31,7 @@ services:
       MODELS_PATH: models/window_models_stand.joblib
       WINDOW_S: "10"
       POLL_S: "5"
+      GRACE_S: "30"                   # допуск на задержку экспорта: inactive 15 с + expint 5 с + ротация 5 с + опрос
       CLOCK: ${CLOCK:-wall}           # flows — если часы маршрутизаторов не совпадают с хостом
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
