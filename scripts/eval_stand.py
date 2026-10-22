@@ -75,13 +75,19 @@ for _, j in journal.iterrows():
                     "detectors": ",".join(sorted(set(",".join(m.detectors).split(","))))})
     else:
         res.append({"scenario": j.kind, "detected": False})
-# инциденты, где источником указана сама цель во время атаки (+60 с), — ответный трафик жертвы
-# (SYN-ACK/RST на тысячи портов при флуде); учитываются отдельно, а не как обнаружение
+# инциденты, где источником указана жертва атаки во время атаки (+60 с), — ответный трафик жертвы
+# (SYN-ACK/RST на тысячи портов при флуде и сканировании); учитываются отдельно, а не как обнаружение.
+# Жертвы — все адреса, которым атакующий отправлял трафик во время атаки (по записям потоков).
 related = set()
-for _, j in journal.iterrows():
-    if len(inc):
-        m = inc[(inc.src == j.target) & (inc.started < j.end + 60_000) & (inc.updated > j.start)]
-        related |= set(m.index) - matched
+with psycopg.connect(a.db) as conn, conn.cursor() as cur:
+    for _, j in journal.iterrows():
+        cur.execute("""SELECT DISTINCT host(dst) FROM flows WHERE host(src) = %s
+                       AND ts >= to_timestamp(%s) AND ts < to_timestamp(%s)""",
+                    (j.attacker, j.start / 1000, j.end / 1000))
+        victims = {r[0] for r in cur.fetchall()} | {j.target}
+        if len(inc):
+            m = inc[inc.src.isin(victims) & (inc.started < j.end + 60_000) & (inc.updated > j.start)]
+            related |= set(m.index) - matched
 fp = inc.drop(index=list(matched | related)) if len(inc) else inc
 out = {"period": a.period, "mode": "offline" if a.offline else "online", "hours": round(hours, 2),
        "scenarios": res, "detected": sum(r["detected"] for r in res), "total": len(res),

@@ -1,0 +1,21 @@
+{
+  "normal_flows": 52362,
+  "attack_flows": 1584104,
+  "normal_windows": 1444,
+  "labelled_windows": {
+    "Benign": 2429,
+    "SYN-flood": 26,
+    "UDP-flood": 26,
+    "Scan": 26,
+    "Bruteforce": 4
+  },
+  "rules_thresholds": {
+    "pkts_s": 197.48,
+    "flows": 146.75,
+    "uniq_dst_ip": 10.0,
+    "brute_flows": 101.58
+  },
+  "iforest_threshold": 0.6909,
+  "rules_on_normal_val": 0,
+  "iforest_on_normal_val": 0
+}

@@ -31,6 +31,14 @@ class ThresholdDetector:
     def fit(self, X: pd.DataFrame) -> "ThresholdDetector":
         for col in ("pkts_s", "flows", "uniq_dst_ip"):
             self.thr[col] = float(X[col].quantile(self.q) * self.margin)
+        # порог «много однотипных сессий к одной цели» тоже калибруется по норме: в нормальном трафике
+        # абонент может делать десятки запросов к одному веб-серверу за окно
+        same = X[(X["uniq_dst_port"] <= 2) & (X["uniq_dst_ip"] <= 2)]
+        if len(same):
+            self.brute_flows = max(self.brute_flows, float(same["flows"].quantile(self.q) * self.margin))
+        self.thr["brute_flows"] = float(self.brute_flows)
+        # нижняя граница порога горизонтального сканирования: в малой сети квантиль вырождается
+        self.thr["uniq_dst_ip"] = max(self.thr["uniq_dst_ip"], 10.0)
         return self
 
     def predict_type(self, X: pd.DataFrame) -> np.ndarray:

@@ -1,0 +1,15 @@
+{
+  "period": [
+    "2026-10-22 01:08:32",
+    "2026-10-22 02:08:32"
+  ],
+  "mode": "online",
+  "hours": 1.0,
+  "scenarios": [],
+  "detected": 0,
+  "total": 0,
+  "victim_backscatter_incidents": 0,
+  "false_incidents": 0,
+  "fp_per_hour": 0.0,
+  "false_examples": []
+}

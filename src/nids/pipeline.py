@@ -42,6 +42,13 @@ def main():
     clock = os.getenv("CLOCK", "wall")
     export_lag_ms = int(float(os.getenv("EXPORT_LAG_S", 15)) * 1000)
     with psycopg.connect(dsn, autocommit=True) as conn:
+        # после (пере)запуска обрабатываются только новые записи, а не вся история таблицы
+        # (иначе накопленные потоки разом дают инциденты и оповещения); FROM_START=1 — с начала
+        if os.getenv("FROM_START") != "1":
+            with conn.cursor() as cur:
+                cur.execute("SELECT coalesce(max(id), 0) FROM flows")
+                last_id = int(cur.fetchone()[0])
+            log.info("начало с id > %d", last_id)
         while True:
             t0 = time.perf_counter()
             with conn.cursor() as cur:

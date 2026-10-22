@@ -1,0 +1,48 @@
+{
+  "period": [
+    "2026-10-22 00:07:32",
+    "2026-10-22 01:07:32"
+  ],
+  "mode": "online",
+  "hours": 1.0,
+  "scenarios": [
+    {
+      "scenario": "SYN-flood",
+      "detected": true,
+      "latency_s": 39.9,
+      "type": "SYN-flood",
+      "confidence": 0.985,
+      "detectors": "iforest,rules,xgb"
+    },
+    {
+      "scenario": "UDP-flood",
+      "detected": true,
+      "latency_s": 42.0,
+      "type": "UDP-flood",
+      "confidence": 0.988,
+      "detectors": "iforest,rules,xgb"
+    },
+    {
+      "scenario": "Scan",
+      "detected": true,
+      "latency_s": 41.6,
+      "type": "Scan",
+      "confidence": 0.988,
+      "detectors": "rules,xgb"
+    },
+    {
+      "scenario": "Bruteforce",
+      "detected": true,
+      "latency_s": 99.8,
+      "type": "Bruteforce",
+      "confidence": 0.943,
+      "detectors": "iforest,xgb"
+    }
+  ],
+  "detected": 4,
+  "total": 4,
+  "victim_backscatter_incidents": 7,
+  "false_incidents": 0,
+  "fp_per_hour": 0.0,
+  "false_examples": []
+}

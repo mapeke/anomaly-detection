@@ -48,7 +48,10 @@ def mark(key: str):
 
 
 def sh(args, check=True, **kw):
-    return subprocess.run(args, cwd=ROOT, check=check, capture_output=True, text=True, encoding="utf-8", **kw)
+    import os
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
+    return subprocess.run(args, cwd=ROOT, check=check, capture_output=True, text=True, encoding="utf-8",
+                          errors="replace", env=env, **kw)
 
 
 def exec_(container: str, cmd: str, env: dict | None = None, detach=False):
@@ -77,6 +80,9 @@ def wait_until(t_end: float):
 
 
 def main():
+    if "--resume-test" in sys.argv:          # продолжить с переобучения (данные нормы и атак уже записаны)
+        session.update(json.loads(SESSION.read_text(encoding="utf-8")))
+        return after_recording()
     LOG.parent.mkdir(exist_ok=True)
     SESSION.parent.mkdir(exist_ok=True)
     for j in ("train_full.csv", "train_low.csv", "test.csv"):
@@ -99,12 +105,15 @@ def main():
     attacks("train_full.csv", 120, 180, FULL)
     attacks("train_low.csv", 120, 180, LOW)
     mark("train_end")
+    after_recording()
 
+
+def after_recording():
     # 3) переобучение
     r = sh([sys.executable, "scripts/train_stand.py", "--normal", session["normal_start"], session["normal_end"],
             "--attacks", session["train_start"], session["train_end"],
             "--journal", "stand/journals/train_full.csv", "stand/journals/train_low.csv"], check=False)
-    log("train_stand: " + (r.stdout + r.stderr).strip().replace("\n", " | ")[-1500:])
+    log("train_stand: " + ((r.stdout or "") + (r.stderr or "")).strip().replace("\n", " | ")[-1500:])
     if r.returncode != 0:
         sys.exit("обучение не удалось")
     sh([*COMPOSE, "restart", "detector"])
@@ -136,11 +145,11 @@ def main():
         jr = "stand/journals/test.csv" if "test" in out else "stand/journals/empty.csv"
         r = sh([sys.executable, "scripts/eval_stand.py", "--period", *args, "--journal", jr,
                 "--out", f"results/{out}"], check=False)
-        log(f"{out}: " + (r.stdout + r.stderr).strip().replace("\n", " | "))
+        log(f"{out}: " + ((r.stdout or "") + (r.stderr or "")).strip().replace("\n", " | "))
     r = sh([sys.executable, "scripts/eval_stand.py", "--period", session["test_start"], session["test_end"],
             "--journal", "stand/journals/test.csv", "--offline", "--out", "results/stand_eval_test_offline.json"],
            check=False)
-    log("offline: " + (r.stdout + r.stderr).strip().replace("\n", " | "))
+    log("offline: " + ((r.stdout or "") + (r.stderr or "")).strip().replace("\n", " | "))
     log("эксперимент завершён")
 
 
